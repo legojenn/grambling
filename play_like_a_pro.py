@@ -6,6 +6,8 @@
 #Purpose:        Reads input from keyboard for last value spun in roulette
 #                and number of spins since the bet won, max number of spins
 #                between wins and median number of spins.
+#
+#Note:           The code is completely unoptimised for readability.  
 
 #Load Pandas & NumPy
 import pandas as pd
