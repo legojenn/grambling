@@ -1,6 +1,6 @@
 #Title:          Roulette Number Predictor for Play Like a Pro
 #Started:        2024-01-22
-#Last Modified:  2024-01-22
+#Last Modified:  2024-01-23
 #Python version: 3.10.12
 #Pandas version: 2.1.4
 #Purpose:        Reads input from keyboard for last value spun in roulette
@@ -39,14 +39,15 @@ losses_even    = 0
 current_number = 0
 
 max_difference = 2
+threshold      = 4
 
 place_holder   = " "
 
 # Clearing the Screen
-os.system('clear')
+os.system('clear') # 'cls' for windows
 
 
-# Main Loop
+# Main Loop 
 
 while (current_number !=99):
     
@@ -91,6 +92,36 @@ while (current_number !=99):
         losses_even  += 1;
         losses_high  += 1;
         losses_low   += 1;
+
+    if (len(wins_low) > 0):
+        print("Spins since last 1-18 win  ", end ="")
+        if (losses_low < 10):
+            print (place_holder, end ="")
+        print (str(losses_low), end = "")
+        print(" - Max spins between wins ", end = "") 
+        if (max(wins_low) < 10):
+            print (place_holder, end ="")
+        print (str(max(wins_low)), end = "")
+        print(" - Top quintile : ", end ="")
+        if (max(str(np.percentile(wins_low, 80) < 10))):
+            print (place_holder, end ="")        
+        print(str(float("{:.1f}".format(np.percentile(wins_low, 80)  ))), end = "")
+        print (".")
+
+    if (len(wins_even) > 0):
+        print("Spins since last even win  ", end ="")
+        if (losses_even < 10):
+            print (place_holder, end ="")
+        print (str(losses_even), end = "")
+        print(" - Max spins between wins ", end = "") 
+        if (max(wins_even) < 10):
+            print (place_holder, end ="")
+        print (str(max(wins_even)), end = "")
+        print(" - Top quintile : ", end ="")
+        if (max(str(np.percentile(wins_even, 80) < 10))):
+            print (place_holder, end ="")        
+        print(str(float("{:.1f}".format(np.percentile(wins_even, 80)  ))), end = "")
+        print (".")
 
     if (len(wins_red) > 0):
         print("Spins since last red win   ", end ="")
@@ -137,38 +168,8 @@ while (current_number !=99):
         print(str(float("{:.1f}".format(np.percentile(wins_odd, 80)  ))), end = "")
         print (".")
 
-    if (len(wins_even) > 0):
-        print("Spins since last even win  ", end ="")
-        if (losses_even < 10):
-            print (place_holder, end ="")
-        print (str(losses_even), end = "")
-        print(" - Max spins between wins ", end = "") 
-        if (max(wins_even) < 10):
-            print (place_holder, end ="")
-        print (str(max(wins_even)), end = "")
-        print(" - Top quintile : ", end ="")
-        if (max(str(np.percentile(wins_even, 80) < 10))):
-            print (place_holder, end ="")        
-        print(str(float("{:.1f}".format(np.percentile(wins_even, 80)  ))), end = "")
-        print (".")
-
-    if (len(wins_low) > 0):
-        print("Spins since last low win   ", end ="")
-        if (losses_low < 10):
-            print (place_holder, end ="")
-        print (str(losses_low), end = "")
-        print(" - Max spins between wins ", end = "") 
-        if (max(wins_low) < 10):
-            print (place_holder, end ="")
-        print (str(max(wins_low)), end = "")
-        print(" - Top quintile : ", end ="")
-        if (max(str(np.percentile(wins_low, 80) < 10))):
-            print (place_holder, end ="")        
-        print(str(float("{:.1f}".format(np.percentile(wins_low, 80)  ))), end = "")
-        print (".")
-
     if (len(wins_high) > 0):
-        print("Spins since last high win  ", end ="")
+        print("Spins since last 19-36 win ", end ="")
         if (losses_high < 10):
             print (place_holder, end ="")
         print (str(losses_high), end = "")
@@ -181,50 +182,67 @@ while (current_number !=99):
             print (place_holder, end ="")        
         print(str(float("{:.1f}".format(np.percentile(wins_high, 80)  ))), end = "")
         print(".")
+
     print(" ")
     print("Bets that are greater than its 4th quintile:", end = "")
+    if (len(wins_low) > 0):
+        if (losses_low > np.percentile(wins_low, 80) ):
+            print(" 1-18", end ="")
+    if (len(wins_even) > 0):
+        if (losses_even > np.percentile(wins_even, 80) ):
+            print(" even", end ="")
     if (len(wins_red) > 0):
         if (losses_red > np.percentile(wins_red, 80) ):
             print(" red", end ="")
     if (len(wins_black) > 0):
         if (losses_black > np.percentile(wins_black, 80) ):
             print(" black", end ="")
-    if (len(wins_even) > 0):
-        if (losses_even > np.percentile(wins_even, 80) ):
-            print(" even", end ="")
     if (len(wins_odd) > 0):
         if (losses_odd > np.percentile(wins_odd, 80) ):
             print(" odd", end ="")
-    if (len(wins_low) > 0):
-        if (losses_low > np.percentile(wins_low, 80) ):
-            print(" low", end ="")
     if (len(wins_high) > 0):
         if (losses_high > np.percentile(wins_high, 80) ):
-            print(" high", end ="")
+            print(" 19-36", end ="")
     print(".")
-
     print("Bets that are within "+ str(max_difference) + " spins of the max:", end = "")
+    if (len(wins_low) > 0):
+        if ((max(wins_low) - max_difference) <= losses_low ):
+            print(" 1-18", end ="")
+    if (len(wins_even) > 0):
+        if ((max(wins_even) - max_difference) <= losses_even ):
+            print(" even", end ="")
     if (len(wins_red) > 0):
         if ((max(wins_red) - max_difference) <= losses_red ):
             print(" red", end ="")
     if (len(wins_black) > 0):
         if ((max(wins_black) - max_difference) <= losses_black ):
             print(" black", end ="")
-    if (len(wins_even) > 0):
-        if ((max(wins_even) - max_difference) <= losses_even ):
-            print(" even", end ="")
     if (len(wins_odd) > 0):
         if ((max(wins_odd) - max_difference) <= losses_odd ):
             print(" odd", end ="")
-    if (len(wins_low) > 0):
-        if ((max(wins_low) - max_difference) <= losses_low ):
-            print(" low", end ="")
     if (len(wins_high) > 0):
         if ((max(wins_high) - max_difference) <= losses_high ):
-            print(" high", end ="")
-
+            print(" 19-36", end ="")
     print(".")
-
+    print("Bets that are at or over "+ str(threshold) + " losses:", end = "")
+    if (len(wins_low) > 0):
+        if (losses_low >= threshold):
+            print(" 1-18", end ="")   
+    if (len(wins_even) > 0):
+        if (losses_even >= threshold):
+            print(" even", end ="")     
+    if (len(wins_red) > 0):
+        if (losses_red >= threshold):
+            print(" red", end ="")
+    if (len(wins_black) > 0):
+        if (losses_black >= threshold):
+            print(" black", end ="")   
+    if (len(wins_odd) > 0):
+        if (losses_odd >= threshold):
+            print(" odd", end ="")     
+    if (len(wins_high) > 0):
+        if (losses_high >= threshold):
+            print(" 19-36", end ="")
+    print(".")
     print('\n' * 2)
-
 print ("Done")
