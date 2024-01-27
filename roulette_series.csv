@@ -1,4 +1,4 @@
-low,even,red,black,odd,high,dozen_1,dozen_2,dozen_3,column_1,column_2,column_3
+1-18,Even,Red,Black,Odd,19-36,First Dozen,Second Dozen,Third Dozen,First Column,Second Column,Third Column
 1,2,1,2,1,19,1,13,25,1,2,3
 2,4,3,4,3,20,2,14,26,4,5,6
 3,6,5,6,5,21,3,15,27,7,8,9

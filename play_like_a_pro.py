@@ -38,26 +38,38 @@ def print_settings(threshold_1_to_1_print, threshold_2_to_1_print, exclude_below
     print(" values below the betting threshold in percentiles.\n")
 
 def print_results_table(series_names,calc_percentile_results,threshold_1, threshold_2):
-    print('{0: <15}'.format('Bet'), end = "")
-    print('{0: <22}'.format('Spins Since Last Hit'), end = "")
-    print('{0: <28}'.format('Maximum Spins Between Hits'), end = "")
-    print('{0: <15}'.format(str(calc_percentile_results) + 'th Percentile'))
+    print('{0: <15}'.format(''), end = "")
+    print('{0: <13}'.format('Spins Since'), end = "")
+    print('{0: <15}'.format('Maximum Spins'), end = "")
+    print('{0: <7}'.format(''), end = "")
+    print('{0: <15}'.format('   ' + str(calc_percentile_results) + 'th'), end = "")
+    print('{0: <10}'.format(''))
 
+    print('{0: <15}'.format('Bet'), end = "")
+    print('{0: <13}'.format(' Last Hit'), end = "")
+    print('{0: <15}'.format('Between Hits'), end = "")
+    print('{0: <7}'.format('Hits'), end = "")
+    print('{0: <15}'.format('Percentile'), end="")
+    print('{0: <10}'.format('Threshold'))
     print("⎼" * 80)
     for series_name in series_names:
         if (len(wins[series_name]) > 0):
-            print('{0: <15}'.format(series_name), end = "")
-            print('{0: >11}'.format(losses[series_name]), end = "")
-            print('{0: >25}'.format(max(wins[series_name])), end = "")
-            temp_list = wins[series_name]
             if (series[series_name].count() > 12):
                 threshold = threshold_1
             else:
                 threshold = threshold_2
+            print('{0: <15}'.format(series_name), end = "")
+            print('{0: >7}'.format(losses[series_name]), end = "")
+            print('{0: >14}'.format(max(wins[series_name])), end = "")
+            print('{0: >11}'.format(len(wins[series_name])), end = "")
+            temp_list = wins[series_name]
             temp_list = [x for x in temp_list if x >= threshold]
             if(len(temp_list) > 0):        
                 temp = float("{:.1f}".format(np.percentile(temp_list, calc_percentile_results)))
-                print('{0: >25}'.format(str(temp)), end = "")
+                print('{0: >10}'.format(str(temp)), end = "")
+            else:
+                print('{0: >10}'.format("N/A"), end = "")
+            print('{0: >13}'.format(threshold), end = "")
             print("")
             print("-" * 80)
 
@@ -106,7 +118,7 @@ def main():
     current_number          = 0
     max_difference          = 2
     threshold_1_to_1        = 4
-    threshold_2_to_1        = 6
+    threshold_2_to_1        = 9
     exclude_below_threshold = True
     if (exclude_below_threshold == False):
         threshold_1_to_1    = 0
