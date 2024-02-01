@@ -1,9 +1,10 @@
-# Title:          Roulette Number Predictor for Play Like a Pro/Fibonacci Dozens
+# Title:          Roulette Number Predictor
 # Version:        2.0.3
 # Started:        2024-01-22
 # Last Modified:  2024-02-01
 # Python version: 3.10.12
 # Pandas version: 2.1.4
+# NumPy version:  X
 # Purpose:        Reads input from keyboard for last value spun in roulette
 #                 and number of spins since the bet won, max number of spins
 #                 between wins and median number of spins.
@@ -11,12 +12,16 @@
 # Note:           Code was rewritten to optimise processing 
 # To-do:          1) Fix function variables
 #                 2) UPPER CASE constants
-#                 3) Move as much functionality into funcions
-#                 4) Fix input to catch errors and change threshold & percentile
+#                 3) Error correction
+#                 5) Move as much functionality into funcions
+#                 6) Permit on the fly changes threshold & percentile 
+#                    and store in config file.
+#                 7) Migrate to GUI
 
 # Import Pandas & NumPy
 import pandas as pd
 import numpy  as np
+
 # Import from OS
 import os
 from os import name
