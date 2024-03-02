@@ -1,0 +1,7 @@
+Setting,Value
+calc_percentile,60
+max_difference,2
+exclude_below_threshold,TRUE
+threshold_1_to_1,4
+threshold_2_to_1,9
+threshold_2_doz_or_col ,3
