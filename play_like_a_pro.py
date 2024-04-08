@@ -13,7 +13,7 @@
 # To-do:          1) Allow for 00 and 000
 #                 2) Option to remove last X spins, ie R5 deletes five
 #                 3) Move as much functionality as possible into functions
-#                 4) 
+#                 4) Integrate Whole Enchilada strategy
 #                 5) Migrate to GUI
 
 # Import Pandas & NumPy
@@ -35,25 +35,26 @@ series = pd.read_csv("roulette_series_(evolution).csv")
 #Load bet descriptions
 bets = pd.read_csv("bets.csv")
 
+# Load series of roulette numbers
+enchilada = pd.read_csv("enchilada.csv")
+
 # Removes columns with ! as first character (keep but don't use)
 series = series[series.columns.drop(list(series.filter(regex='!')))]
 
 # CONSTANTS
-SCREEN_WIDTH       = 108
-NUMBERS_TO_DISPLAY = 23
-RESULTS_TO_DISPLAY = 29
-NUMBERS_ON_WHEEL   = 37
-ARROW_UP           = "↑"
-ARROW_DOWN         = "↓"
-ARROW_SAME         = "-"
-MAX_TO_SHOW        = 30
-BET_INSTRUCTIONS   = True
-
-
-    
-
-OUTCOME_WIN        = colorama.Fore.WHITE + colorama.Style.BRIGHT + colorama.Back.LIGHTGREEN_EX + "⎸W⎹"
-OUTCOME_LOSS       = colorama.Fore.WHITE + colorama.Style.BRIGHT + colorama.Back.LIGHTRED_EX   + "⎸L⎹"
+SCREEN_WIDTH          = 108
+NUMBERS_TO_DISPLAY    = 23
+RESULTS_TO_DISPLAY    = 29
+NUMBERS_ON_WHEEL      = 37
+ARROW_UP              = "↑"
+ARROW_DOWN            = "↓"
+ARROW_SAME            = "-"
+MAX_TO_SHOW           = 30
+BET_INSTRUCTIONS      = True   
+OUTCOME_WIN           = colorama.Fore.WHITE + colorama.Style.BRIGHT + colorama.Back.LIGHTGREEN_EX + "⎸W⎹"
+OUTCOME_LOSS          = colorama.Fore.WHITE + colorama.Style.BRIGHT + colorama.Back.LIGHTRED_EX   + "⎸L⎹"
+PLAY_WHOLE_ENCHILADA  = True
+WHOLE_ENCHILADA_RANGE = 5
 #———————————————————————————————————————————————————————————————————————————————
 # Clear screen
 def clear():
@@ -109,7 +110,6 @@ def recent_numbers(l_winners, i_num_played):
     else:
         print(f"Last {i_num_display} numbers:", end = "")
 
-
     for i_temp_loop in range(0,i_num_display):
         print("⎹", end="")
         print(colorama.Back.RESET, end ="")
@@ -145,7 +145,6 @@ def insert_stats(df, row):
 def get_spin():
     b_valid = False
     while (not b_valid):
-
         s_current_number = str(input("Enter the last spin (99 to quit): "))
         if(s_current_number.isdigit()):
             i_current_number = int(s_current_number)
@@ -156,6 +155,151 @@ def get_spin():
         else:
             print("Error! The value entered must be an integer between 0 and 36.\n")
     return i_current_number
+#———————————————————————————————————————————————————————————————————————————————
+def enchilada_suggestions(l_winners): #Name taken from a style of betting from Roulette Master Youtube Video, 2024-04-06
+#This whole function is poorly written. A rewrite is in order
+
+    i_red_count            = 0
+    i_black_count          = 0
+    i_odd_count            = 0
+    i_even_count           = 0
+    i_high_count           = 0
+    i_low_count            = 0
+    i_c1_count             = 0
+    i_c2_count             = 0
+    i_c3_count             = 0
+    i_d1_count             = 0
+    i_d2_count             = 0
+    i_d3_count             = 0
+    s_bet_list             = ""
+    b_multiple_suggestions = False
+
+    for i_temp_loop in range(0,WHOLE_ENCHILADA_RANGE):
+        #There must be a more efficient way to code this
+        #colour
+        if(l_winners[i_temp_loop] in enchilada['red'].values):
+            i_red_count += 1
+        if(l_winners[i_temp_loop] in enchilada['black'].values):
+            i_black_count += 1  
+        #odd-even         
+        if(l_winners[i_temp_loop] in enchilada['even'].values):
+            i_even_count += 1
+        if(l_winners[i_temp_loop] in enchilada['odd'].values):
+            i_odd_count += 1
+        #high-low
+        if(l_winners[i_temp_loop] in enchilada['low'].values):
+            i_low_count += 1
+        if(l_winners[i_temp_loop] in enchilada['high'].values):
+            i_high_count += 1   
+        #dozens
+        if(l_winners[i_temp_loop] in enchilada['d1'].values):
+            i_d1_count += 1   
+        if(l_winners[i_temp_loop] in enchilada['d2'].values):
+            i_d2_count += 1
+        if(l_winners[i_temp_loop] in enchilada['d3'].values):
+            i_d3_count += 1 
+        #columns
+        if(l_winners[i_temp_loop] in enchilada['c1'].values):
+            i_c1_count += 1   
+        if(l_winners[i_temp_loop] in enchilada['c2'].values):
+            i_c2_count += 1
+        if(l_winners[i_temp_loop] in enchilada['c3'].values):
+            i_c3_count += 1 
+
+    #There must be a more efficient way to code this
+    #1 to 1
+    if (i_low_count < i_high_count):
+        if (b_multiple_suggestions == False):
+            s_bet_list = s_bet_list +" 1-18"
+            b_multiple_suggestions = True
+        else:
+                s_bet_list = s_bet_list +", 1-18"
+
+    if (i_even_count < i_odd_count):
+        if (b_multiple_suggestions == False):
+            s_bet_list = s_bet_list +" Even"
+            b_multiple_suggestions = True
+        else:
+            s_bet_list = s_bet_list +", Even"
+
+    if (i_red_count < i_black_count):
+        if (b_multiple_suggestions == False):
+            s_bet_list = s_bet_list +" Red"
+            b_multiple_suggestions = True
+        else:
+            s_bet_list = s_bet_list +", Red"
+
+    if (i_black_count < i_red_count):
+        if (b_multiple_suggestions == False):
+            s_bet_list = s_bet_list +" Black"
+            b_multiple_suggestions = True
+        else:
+            s_bet_list = s_bet_list +", Black"
+
+    if (i_odd_count < i_even_count):
+        if (b_multiple_suggestions == False):
+            s_bet_list = s_bet_list +" Odd"
+            b_multiple_suggestions = True
+        else:
+            s_bet_list = s_bet_list +", Odd"
+
+    if (i_high_count < i_low_count):
+        if (b_multiple_suggestions == False):
+            s_bet_list = s_bet_list +" 19-36"
+            b_multiple_suggestions = True
+        else:
+            s_bet_list = s_bet_list +", 19-36"
+#2 to 1 - dozens
+    if (i_d1_count < i_d2_count and i_d1_count < i_d3_count):
+        if (b_multiple_suggestions == False):
+            s_bet_list = s_bet_list +" First Dozen"
+            b_multiple_suggestions = True
+        else:
+            s_bet_list = s_bet_list +", First Dozen"
+
+    if (i_d2_count < i_d1_count and i_d2_count < i_d3_count):
+        if (b_multiple_suggestions == False):
+            s_bet_list = s_bet_list +" Second Dozen"
+            b_multiple_suggestions = True
+        else:
+            s_bet_list = s_bet_list +", Second Dozen"
+
+    if (i_d3_count < i_d1_count and i_d3_count < i_d2_count):
+        if (b_multiple_suggestions == False):
+            s_bet_list = s_bet_list +" Third Dozen"
+            b_multiple_suggestions = True
+        else:
+            s_bet_list = s_bet_list +", Third Dozen"
+
+#2 to 1 - columns
+    if (i_c1_count < i_c2_count and i_c1_count < i_c3_count):
+        if (b_multiple_suggestions == False):
+            s_bet_list = s_bet_list +" First Column"
+            b_multiple_suggestions = True
+        else:
+            s_bet_list = s_bet_list +", First Column"
+
+    if (i_c2_count < i_c1_count and i_c2_count < i_c3_count):
+        if (b_multiple_suggestions == False):
+            s_bet_list = s_bet_list +" Second Column"
+            b_multiple_suggestions = True
+        else:
+            s_bet_list = s_bet_list +", Second Column"
+
+    if (i_c3_count < i_c1_count and i_c3_count < i_c2_count):
+        if (b_multiple_suggestions == False):
+            s_bet_list = s_bet_list +" Third Column"
+            b_multiple_suggestions = True
+        else:
+            s_bet_list = s_bet_list +", Third Column"
+
+    if (b_multiple_suggestions == False):
+        s_bet_list = "None."
+    else:
+        s_bet_list = s_bet_list + "."
+
+    print(f"Suggested Whole Enchilada bets:{s_bet_list}")
+    print_horizontal_line("L")
 #———————————————————————————————————————————————————————————————————————————————
 def print_results_table(l_series_names,i_threshold_1_to_1, i_threshold_2_to_1, i_threshold_2_doz_or_col, d_outcomes, d_wins, d_consecutive_wins, d_max_consecutive_wins, l_losses, i_spins, i_num_played):
     i_temp_loop = 0
@@ -384,6 +528,9 @@ def main():
         
             #display last (x) winning_numbers
             spins = recent_numbers(winning_numbers, numbers_drawn)
+
+            if (PLAY_WHOLE_ENCHILADA and spins >= WHOLE_ENCHILADA_RANGE):
+                enchilada_suggestions(winning_numbers)
 
             #Print statistics
             print_results_table(series_names, threshold_1_to_1, threshold_2_to_1, threshold_2_doz_or_col, outcomes, wins, consecutive_wins, max_consecutive_wins, losses, spins, numbers_drawn)
